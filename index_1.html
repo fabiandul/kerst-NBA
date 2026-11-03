@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0e2a1f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="LeCoins">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<title>LeCoins Kerst NBA</title>
+<style>
+:root{--bg:#0e2a1f;--card:#16392b;--card2:#1d4636;--red:#c8102e;--gold:#f5c542;--txt:#f4f1e8;--mut:#9fb8aa;--ok:#4cd07d;--bad:#ff6b6b}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at top,#14402f,#0a1d15);background-attachment:fixed;color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+#app{max-width:720px;margin:0 auto;padding:14px 14px 80px}
+h1{font-size:26px;margin:6px 0}
+h2{font-size:19px;margin:0 0 4px}
+h3{font-size:16px;margin:0 0 6px}
+.snow{text-align:center;font-size:22px;letter-spacing:6px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.coins{background:var(--card2);border:2px solid var(--gold);border-radius:14px;padding:8px 14px;text-align:right}
+.coins b{color:var(--gold);font-size:22px}
+.coins small{display:block;color:var(--mut)}
+.tabs{display:flex;gap:6px;margin:10px 0;position:sticky;top:0;background:#0b2118;padding:6px 0;z-index:5;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs button{flex:0 0 auto;padding:12px 14px;border:0;border-radius:12px;background:var(--card);color:var(--txt);font-size:15px;font-weight:600;white-space:nowrap}
+.tabs button.on{background:var(--red)}
+.card{background:var(--card);border-radius:16px;padding:14px;margin:12px 0;box-shadow:0 2px 10px #0006}
+.muted{color:var(--mut);font-size:13px}
+.bet{border-top:1px solid #ffffff22;margin-top:12px;padding-top:10px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:8px}
+.opt{background:var(--card2);border:2px solid transparent;border-radius:12px;color:var(--txt);padding:12px 8px;font-size:15px;font-weight:600}
+.opt span{display:block;color:var(--gold);font-size:20px}
+.opt.sel{border-color:var(--gold);background:#2a5a45}
+.opt.mine{border-color:var(--ok)}
+.opt:disabled{opacity:.55}
+.btn{border:0;border-radius:12px;padding:12px 16px;font-size:16px;font-weight:700;background:var(--red);color:#fff}
+.btn.gold{background:var(--gold);color:#222}
+.btn.grey{background:#3a5a4b}
+.btn.small{padding:7px 10px;font-size:13px}
+.btn.green{background:#2f9e5a}
+input,select,textarea{width:100%;padding:11px;border-radius:10px;border:1px solid #ffffff33;background:#0c2a1f;color:var(--txt);font-size:16px}
+input.sc{width:54px;padding:8px 4px;text-align:center}
+textarea{min-height:70px;font-family:inherit}
+label{display:block;margin:8px 0 3px;color:var(--mut);font-size:13px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row>*{flex:1}
+.row>.btn{flex:0 0 auto}
+.pill{display:inline-block;padding:3px 9px;border-radius:99px;font-size:12px;font-weight:700;background:#3a5a4b}
+.pill.won{background:var(--ok);color:#06240f}.pill.lost{background:var(--bad);color:#2b0505}.pill.pending{background:var(--gold);color:#2a2200}.pill.concept{background:#7a4fd0}
+.err{background:#5b1620;border:1px solid var(--bad);padding:10px;border-radius:10px;margin:10px 0}
+.info{background:#1d4636;border:1px solid var(--gold);padding:10px;border-radius:10px;margin:10px 0;font-size:14px}
+.names{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.name{padding:26px 8px;font-size:22px;font-weight:800;border-radius:18px;border:3px solid var(--gold);background:var(--card2);color:var(--txt)}
+.name.adm{border-color:var(--red)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:7px 4px;border-bottom:1px solid #ffffff1a;text-align:left}
+.rank{display:flex;justify-content:space-between;padding:12px;border-radius:12px;background:var(--card2);margin:6px 0;font-size:18px}
+.title-box{display:flex;gap:10px;align-items:center;background:var(--card2);border-radius:12px;padding:10px;margin:8px 0}
+.title-box .em{font-size:28px}
+.pos{color:var(--ok)}.neg{color:var(--bad)}
+.conf{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:60}
+.conf span{position:absolute;top:-40px;font-size:26px;animation:fall 3.2s linear forwards}
+@keyframes fall{to{transform:translateY(115vh) rotate(420deg)}}
+.modal{position:fixed;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.modal .box{background:var(--card);border:3px solid var(--gold);border-radius:20px;padding:18px;max-width:420px;width:100%;max-height:80vh;overflow:auto}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, getDoc, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, writeBatch, increment } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+
+const ADMIN_CODE = "Legoat";
+const START_COINS = 1000;
+const MIN_STAKE = 1;
+const MAX_STAKE = 200;
+const MAX_ODDS = 15;
+const DEFAULT_NAMES = ["Fabian", "Laurens", "Roy"];
+const GENERAL_ID = "algemeen";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCqa_X6wnxdtXkkVavwUvAgDy8hKk_hWS0",
+  authDomain: "nba-kerst-games.firebaseapp.com",
+  projectId: "nba-kerst-games",
+  storageBucket: "nba-kerst-games.firebasestorage.app",
+  messagingSenderId: "942941234856",
+  appId: "1:942941234856:web:01d1093bc59f8f73c4c49d"
+};
+const db = getFirestore(initializeApp(firebaseConfig));
+
+const S = { me: localStorage.getItem("lc_me") || null, admin: sessionStorage.getItem("lc_admin") === "1",
+  tab: null, atab: "over", players: [], games: [], bets: [], wagers: [], sel: null, stake: "", err: "", form: {}, dirty: false,
+  notice: null, confetti: "", res: {} };
+let unsubW = null;
+const $app = document.getElementById("app");
+
+// ---------- helpers ----------
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmt = n => Math.round(n).toLocaleString("nl-NL");
+const fdate = t => new Date(t).toLocaleString("nl-NL", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+const F = (id, def = "") => (id in S.form ? S.form[id] : def);
+const norm = s => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const sg = n => (n > 0 ? "+" : "") + Number(n).toFixed(1);
+const fail = e => { console.error(e); S.err = "Fout: " + (e.message || e); render(); };
+const isGen = g => !!g && g.kind === "general";
+const gLabel = g => !g ? "" : isGen(g) ? "Algemeen" : g.away + " @ " + g.home;
+const gameOf = id => S.games.find(g => g.id === id);
+const capOf = b => Math.min(MAX_STAKE, b.maxStake > 0 ? b.maxStake : MAX_STAKE);
+const isOpen = (b, g) => !!g && !g.closed && b.status === "open" && b.published !== false;
+const player = n => S.players.find(p => p.name === n);
+const pendingStake = () => S.wagers.filter(w => w.status === "pending").reduce((s, w) => s + w.stake, 0);
+const available = () => (player(S.me)?.coins ?? 0) - pendingStake();
+const myWager = betId => S.wagers.find(w => w.id === betId + "__" + S.me);
+const fair2 = (a, b) => { const pa = 1 / a, pb = 1 / b, t = pa + pb; return [t / pa, t / pb]; };
+const payoutOf = w => Math.round(w.stake * w.odds);
+const nkey = w => w.id + ":" + (w.settledAt || 0);
+const getSeen = () => { try { return JSON.parse(localStorage.getItem("lc_seen_" + S.me) || "[]"); } catch (e) { return []; } };
+const setSeen = a => { try { localStorage.setItem("lc_seen_" + S.me, JSON.stringify(a)); } catch (e) {} };
+
+// ---------- data ----------
+function listen(name, key, sortFn) {
+  onSnapshot(collection(db, name), snap => {
+    S[key] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (sortFn) S[key].sort(sortFn);
+    S.err = ""; render();
+  }, e => fail(e));
+}
+listen("games", "games", (a, b) => (a.start || 0) - (b.start || 0));
+listen("bets", "bets", (a, b) => (a.order || 0) - (b.order || 0) || (a.created || 0) - (b.created || 0));
+listen("players", "players", (a, b) => b.coins - a.coins);
+
+function listenWagers() {
+  if (unsubW) unsubW();
+  unsubW = null;
+  if (!S.me) return;
+  const q = S.admin ? collection(db, "wagers") : query(collection(db, "wagers"), where("player", "==", S.me));
+  unsubW = onSnapshot(q, snap => { S.wagers = snap.docs.map(d => ({ id: d.id, ...d.data() })); checkNotice(); render(); }, e => fail(e));
+}
+if (S.me) listenWagers();
+
+// ---------- winstmelding ----------
+function makeConfetti() {
+  const em = ["🎉", "🪙", "❄️", "⭐", "🎄", "🏀"];
+  let h = '<div class="conf">';
+  for (let i = 0; i < 34; i++) h += `<span style="left:${Math.random() * 96}%;animation-delay:${(Math.random() * 1.4).toFixed(2)}s">${em[i % em.length]}</span>`;
+  return h + "</div>";
+}
+function checkNotice() {
+  if (S.admin || !S.me || S.notice) return;
+  const seen = getSeen();
+  const un = S.wagers.filter(w => (w.status === "won" || w.status === "lost") && !seen.includes(nkey(w)));
+  if (un.length) { S.notice = un; S.confetti = un.some(w => w.status === "won") ? makeConfetti() : ""; }
+}
+function noticeView() {
+  if (!S.notice) return "";
+  const won = S.notice.filter(w => w.status === "won"), lost = S.notice.filter(w => w.status === "lost");
+  const net = S.notice.reduce((s, w) => s + (w.net || 0), 0);
+  const head = won.length ? "🎉 Je hebt gewonnen!" : "Helaas, deze keer niet";
+  const lines = S.notice.map(w => {
+    const b = S.bets.find(x => x.id === w.betId);
+    const t = esc(w.title || b?.title || "");
+    return w.status === "won"
+      ? `<div style="margin:8px 0"><b class="pos">+${fmt(w.net)} LeCoins</b><div class="muted">${t}: ${esc(w.label)}</div></div>`
+      : `<div style="margin:8px 0"><b class="neg">-${fmt(w.stake)} LeCoins</b><div class="muted">${t}: ${esc(w.label)}</div></div>`;
+  }).join("");
+  return `${S.confetti}<div class="modal"><div class="box"><h2>${head}</h2>
+  <div style="font-size:22px;margin:6px 0">Netto: <b class="${net >= 0 ? "pos" : "neg"}">${net >= 0 ? "+" : ""}${fmt(net)}</b> LeCoins</div>
+  ${lines}<div style="margin-top:12px"><button class="btn gold" data-a="closeNotice">Verder</button></div></div></div>`;
+}
+
+// ---------- render ----------
+function typing() { const a = document.activeElement; return a && $app.contains(a) && /INPUT|TEXTAREA|SELECT/.test(a.tagName); }
+function render() { if (typing()) { S.dirty = true; return; } S.dirty = false; paint(); }
+function paint() {
+  const err = S.err ? `<div class="err">${esc(S.err)}</div>` : "";
+  let h;
+  if (!S.me) h = loginView();
+  else if (S.admin) h = adminView();
+  else h = playerView();
+  $app.innerHTML = `<div class="snow">🎄 ❄️ 🏀 ❄️ 🎄</div>` + err + h + noticeView();
+}
+
+function loginView() {
+  const names = [...new Set([...DEFAULT_NAMES, ...S.players.map(p => p.name)])];
+  return `<h1 style="text-align:center">LeCoins Kerst NBA</h1>
+  <p class="muted" style="text-align:center">Kies je naam en begin met ${START_COINS} LeCoins</p>
+  <div class="names">${names.map(n => `<button class="name" data-a="login" data-n="${esc(n)}">${esc(n)}</button>`).join("")}
+  <button class="name adm" data-a="adminLogin">Admin</button></div>`;
+}
+
+// ---------- spelersweergave ----------
+function tabsList() {
+  const gs = S.games.filter(g => !isGen(g)), gen = S.games.find(isGen);
+  const t = gs.map(g => [g.id, g.away + "-" + g.home]);
+  if (gen) t.push([gen.id, "Algemeen"]);
+  t.push(["mine", "Mijn bets"], ["done", "Afgerond"]);
+  return t;
+}
+function playerView() {
+  const p = player(S.me), tabs = tabsList();
+  const cur = S.tab && tabs.some(t => t[0] === S.tab) ? S.tab : tabs[0][0];
+  let body;
+  if (cur === "mine") body = mineView();
+  else if (cur === "done") body = doneView();
+  else body = gameTab(gameOf(cur));
+  return `<div class="top"><div><h1>Hoi ${esc(S.me)}</h1><button class="btn grey small" data-a="logout">Uitloggen</button></div>
+  <div class="coins"><b>${fmt(available())}</b> LeCoins<small>beschikbaar</small><small>totaal ${fmt(p?.coins ?? 0)}</small></div></div>
+  <div class="tabs">${tabs.map(([k, l]) => `<button class="${cur === k ? "on" : ""}" data-a="tab" data-t="${k}">${esc(l)}</button>`).join("")}</div>${body}`;
+}
+
+function gameTab(g) {
+  if (!g) return `<div class="card muted">Er zijn nog geen wedstrijden. De admin voegt ze snel toe.</div>`;
+  const bets = S.bets.filter(b => b.gameId === g.id && b.published !== false);
+  const head = isGen(g)
+    ? `<h2>Algemene bets</h2><div class="muted">Deze bets gaan over alle 3 de wedstrijden samen</div>`
+    : `<h2>${esc(g.away)} @ ${esc(g.home)}</h2><div class="muted">${fdate(g.start)}</div>`;
+  const closed = g.closed ? `<div class="info">🔒 Deze wedstrijd is gesloten. Je kunt hier niet meer inzetten.</div>` : "";
+  return `<div class="card">${head}${closed}${bets.map(b => betView(b, g)).join("") || `<div class="muted" style="margin-top:10px">Nog geen bets beschikbaar</div>`}</div>`;
+}
+
+function betView(b, g) {
+  const open = isOpen(b, g), w = myWager(b.id), cap = capOf(b);
+  const opts = b.options.map((o, i) => {
+    const cls = ["opt", w && w.idx === i ? "mine" : "", S.sel && S.sel.bet === b.id && S.sel.idx === i ? "sel" : ""].join(" ");
+    return `<button class="${cls}" ${open ? "" : "disabled"} data-a="sel" data-b="${b.id}" data-i="${i}">${esc(o.label)}<span>${Number(o.odds).toFixed(2)}x</span></button>`;
+  }).join("");
+  let state = "";
+  if (b.status === "settled") state = `<div class="muted">Uitslag: <b>${esc(b.options[b.winner]?.label)}</b></div>`;
+  else if (b.status === "void") state = `<div class="muted">Bet vervallen, inzetten teruggegeven</div>`;
+  else if (!open) state = `<div class="muted">🔒 Gesloten</div>`;
+  let mine = "";
+  if (w) mine = `<div style="margin-top:8px">Jouw inzet: <b>${fmt(w.stake)}</b> op ${esc(w.label)} (${Number(w.odds).toFixed(2)}x) <span class="pill ${w.status}">${statusText(w)}</span>
+    ${open && w.status === "pending" ? `<button class="btn grey small" data-a="cancel" data-w="${w.id}">Annuleer</button>` : ""}</div>`;
+  let form = "";
+  if (open && S.sel && S.sel.bet === b.id) {
+    const o = b.options[S.sel.idx];
+    const quick = [...new Set([25, 50, 100, cap].filter(v => v <= cap))];
+    form = `<div class="row" style="margin-top:10px"><input id="stake" type="number" inputmode="numeric" min="${MIN_STAKE}" max="${cap}" placeholder="Inzet (${MIN_STAKE} tot ${cap})" value="${esc(S.stake)}">
+    <button class="btn gold" data-a="place" data-b="${b.id}">Zet in op ${esc(o.label)}</button></div>
+    <div class="row" style="margin-top:6px">${quick.map(v => `<button class="btn grey small" data-a="quick" data-v="${v}">${v}</button>`).join("")}</div>
+    <div class="muted">Inzet van ${MIN_STAKE} tot ${cap}. Uitbetaling bij winst: ${fmt((Number(S.stake) || 0) * o.odds)}</div>`;
+  }
+  return `<div class="bet"><h3>${esc(b.title)}</h3>${state}<div class="opts">${opts}</div>${form}${mine}</div>`;
+}
+
+function statusText(w) {
+  if (w.status === "won") return "Gewonnen +" + fmt(w.net);
+  if (w.status === "lost") return "Verloren " + fmt(w.net);
+  if (w.status === "void") return "Teruggegeven";
+  return "Lopend";
+}
+
+function wagerCard(w) {
+  const b = S.bets.find(x => x.id === w.betId), g = gameOf(w.gameId);
+  const title = w.title || b?.title || "", gl = w.gameLabel || gLabel(g);
+  const open = b && isOpen(b, g) && w.status === "pending";
+  let res;
+  if (w.status === "won") res = `Uitbetaald: <b class="pos">${fmt(w.payout ?? payoutOf(w))}</b> (winst +${fmt(w.net)})`;
+  else if (w.status === "lost") res = `Uitbetaald: <b class="neg">0</b> (verlies -${fmt(w.stake)})`;
+  else if (w.status === "void") res = `Bet vervallen, inzet terug: ${fmt(w.stake)}`;
+  else res = `Bij winst: <b>${fmt(payoutOf(w))}</b>`;
+  return `<div class="card"><div class="muted">${esc(gl)}</div><h3>${esc(title)}</h3>
+  <div>${esc(w.label)} · odds ${Number(w.odds).toFixed(2)}x · ingezet <b>${fmt(w.stake)}</b></div>
+  <div style="margin-top:6px">${res} <span class="pill ${w.status}">${statusText(w)}</span>
+  ${open ? `<button class="btn grey small" data-a="cancel" data-w="${w.id}">Annuleer</button>` : ""}</div></div>`;
+}
+
+function mineView() {
+  const ws = S.wagers.filter(w => w.status === "pending").sort((a, b) => (b.placed || 0) - (a.placed || 0));
+  const tot = ws.reduce((s, w) => s + w.stake, 0);
+  if (!ws.length) return `<div class="card muted">Je hebt op dit moment geen lopende inzetten.</div>`;
+  return `<div class="info">Lopende inzetten: <b>${ws.length}</b> · totaal ingezet <b>${fmt(tot)}</b> LeCoins</div>` + ws.map(wagerCard).join("");
+}
+function doneView() {
+  const ws = S.wagers.filter(w => w.status !== "pending").sort((a, b) => (b.settledAt || 0) - (a.settledAt || 0));
+  if (!ws.length) return `<div class="card muted">Er zijn nog geen bets uitbetaald.</div>`;
+  return ws.map(wagerCard).join("");
+}
+
+// ---------- sjablonen ----------
+const TPL_NAMES = [["winner", "Winnaar"], ["spread", "Spread"], ["total", "Over/under totaal"], ["margin", "Winstmarge"], ["q1", "Eerste kwart"], ["half1", "Eerste helft"], ["ot", "Overtime"], ["bestq", "Kwart met meeste punten"], ["first", "Eerste score"], ["prop", "Speler: punten"], ["custom", "Eigen bet"]];
+const TPL_LINE = { spread: "-1.5", total: "225.5", prop: "20.5" };
+function tpl(k, g, line, pl) {
+  const a = g.away, h = g.home, L = parseFloat(String(line).replace(",", "."));
+  switch (k) {
+    case "winner": return { type: "winner", title: "Winnaar wedstrijd", opts: `${a} | 2.00\n${h} | 2.00`, extra: {} };
+    case "spread": return { type: "spread", title: "Spread (puntenverschil)", opts: `${a} ${sg(-L)} | 1.95\n${h} ${sg(L)} | 1.95`, extra: { spreadHome: L } };
+    case "total": return { type: "total", title: "Totaal aantal punten", opts: `Over ${L} | 2.00\nOnder ${L} | 2.00`, extra: { line: L } };
+    case "margin": return { type: "margin", title: "Met hoeveel punten wordt de wedstrijd gewonnen?", opts: "1 tot 5 punten | 3.70\n6 tot 10 punten | 4.20\n11 tot 15 punten | 5.30\n16 of meer punten | 3.40", extra: {} };
+    case "q1": return { type: "q1", title: `Scoort ${a} meer punten dan ${h} in het eerste kwart?`, opts: "Ja | 2.10\nNee | 1.90", extra: {} };
+    case "half1": return { type: "half1", title: `Scoort ${a} meer punten dan ${h} in de eerste helft?`, opts: "Ja | 2.05\nNee | 1.95", extra: {} };
+    case "ot": return { type: "ot", title: "Gaat de wedstrijd naar overtime?", opts: "Ja | 14.00\nNee | 1.07", extra: {} };
+    case "bestq": return { type: "bestq", title: "In welk kwart vallen de meeste punten (beide teams samen)? Bij gelijk telt het vroegste kwart.", opts: "Kwart 1 | 4.00\nKwart 2 | 4.00\nKwart 3 | 4.00\nKwart 4 | 4.00", extra: {} };
+    case "first": return { type: "first", title: "Welk team scoort als eerste?", opts: `${a} | 2.00\n${h} | 2.00`, extra: {} };
+    case "prop": return { type: "prop", title: `${pl || "Speler"}: totaal aantal punten`, opts: `Over ${L} | 2.00\nOnder ${L} | 2.00`, extra: { line: L, player: pl || "", match: norm(pl || "") } };
+    default: return { type: "custom", title: "", opts: "Optie A | 2.00\nOptie B | 2.00", extra: {} };
+  }
+}
+
+// ---------- uitslagen berekenen ----------
+function readRes(g) {
+  const n = id => { const v = F(id, ""); return v === "" ? NaN : Number(v); };
+  const a = [1, 2, 3, 4].map(q => n(`f_r_${g.id}_a_${q}`)), h = [1, 2, 3, 4].map(q => n(`f_r_${g.id}_h_${q}`));
+  if ([...a, ...h].some(isNaN)) return null;
+  const ao = n(`f_r_${g.id}_a_o`) || 0, ho = n(`f_r_${g.id}_h_o`) || 0;
+  const A = a.reduce((s, x) => s + x, 0) + ao, H = h.reduce((s, x) => s + x, 0) + ho;
+  if (A === H) return { err: "Gelijke eindstand. Vul de overtime in." };
+  return { a, h, ao, ho, A, H };
+}
+function outcome(bet, R, g) {
+  switch (bet.type) {
+    case "winner": return R.A > R.H ? 0 : 1;
+    case "spread": { const s = R.H + bet.spreadHome; return s === R.A ? -1 : s > R.A ? 1 : 0; }
+    case "total": { const s = R.A + R.H; return s === bet.line ? -1 : s > bet.line ? 0 : 1; }
+    case "margin": { const d = Math.abs(R.A - R.H); return d <= 5 ? 0 : d <= 10 ? 1 : d <= 15 ? 2 : 3; }
+    case "q1": return R.a[0] > R.h[0] ? 0 : 1;
+    case "half1": return R.a[0] + R.a[1] > R.h[0] + R.h[1] ? 0 : 1;
+    case "ot": return R.ao > 0 || R.ho > 0 ? 0 : 1;
+    case "bestq": { const t = [0, 1, 2, 3].map(i => R.a[i] + R.h[i]); return t.indexOf(Math.max(...t)); }
+    case "first": { const f = F(`f_first_${g.id}`, ""); return f === "a" ? 0 : f === "h" ? 1 : null; }
+    case "prop": { const v = F(`f_p_${g.id}_${bet.id}`, ""); if (v === "") return null; const p = Number(v); return p === bet.line ? -1 : p > bet.line ? 0 : 1; }
+    default: return null;
+  }
+}
+function gameBetsToSettle(g) { return S.bets.filter(b => b.gameId === g.id && b.published !== false && (b.status === "open" || b.status === "locked")); }
+
+async function settleMany(items) {
+  const ops = [], net = {};
+  for (const { bet, idx } of items) {
+    for (const w of S.wagers.filter(x => x.betId === bet.id && x.status === "pending")) {
+      let status, n;
+      if (idx === -1) { status = "void"; n = 0; }
+      else if (w.idx === idx) { status = "won"; n = payoutOf(w) - w.stake; }
+      else { status = "lost"; n = -w.stake; }
+      const payout = status === "won" ? payoutOf(w) : status === "void" ? w.stake : 0;
+      ops.push(b => b.update(doc(db, "wagers", w.id), { status, net: n, payout, settledAt: Date.now() }));
+      net[w.player] = (net[w.player] || 0) + n;
+    }
+    ops.push(b => b.update(doc(db, "bets", bet.id), idx === -1 ? { status: "void", winner: null } : { status: "settled", winner: idx }));
+  }
+  for (const [p, n] of Object.entries(net)) if (n) ops.push(b => b.update(doc(db, "players", p), { coins: increment(n) }));
+  for (let i = 0; i < ops.length; i += 400) { const batch = writeBatch(db); ops.slice(i, i + 400).forEach(f => f(batch)); await batch.commit(); }
+}
+
+// ---------- admin ----------
+function adminView() {
+  const tabs = [["over", "Overzicht"], ["res", "Uitslagen"], ["games", "Bets"], ["rank", "Ranglijst"], ["players", "Spelers"], ["calc", "Odds"]];
+  const body = { over: adminOver, res: adminRes, games: adminGames, rank: adminRank, players: adminPlayers, calc: adminCalc }[S.atab]();
+  return `<div class="top"><h1>Admin</h1><button class="btn grey small" data-a="logout">Uitloggen</button></div>
+  <div class="tabs">${tabs.map(([k, l]) => `<button class="${S.atab === k ? "on" : ""}" data-a="atab" data-t="${k}">${l}</button>`).join("")}</div>${body}`;
+}
+
+function adminOver() {
+  const per = S.games.map(g => {
+    const bets = S.bets.filter(b => b.gameId === g.id && b.published !== false);
+    const rows = bets.map(b => {
+      const ws = S.wagers.filter(w => w.betId === b.id);
+      if (!ws.length) return "";
+      return `<div class="bet"><b>${esc(b.title)}</b> <span class="pill">${b.status}</span>
+      <table>${ws.map(w => `<tr><td>${esc(w.player)}</td><td>${esc(w.label)}</td><td>${fmt(w.stake)}</td><td><span class="pill ${w.status}">${statusText(w)}</span></td></tr>`).join("")}</table></div>`;
+    }).join("");
+    return `<div class="card"><h3>${esc(gLabel(g))} ${g.closed ? "🔒" : ""}</h3>${isGen(g) ? "" : `<div class="muted">${fdate(g.start)}</div>`}${rows || `<div class="muted">Nog geen inzetten</div>`}</div>`;
+  }).join("");
+  const tot = S.wagers.filter(w => w.status === "pending").reduce((s, w) => s + w.stake, 0);
+  return `<div class="info">Openstaand totaal: <b>${fmt(tot)}</b> LeCoins in <b>${S.wagers.filter(w => w.status === "pending").length}</b> inzetten</div>` + (per || `<div class="card muted">Nog geen wedstrijden</div>`);
+}
+
+function adminRank() {
+  const pend = {};
+  S.wagers.filter(w => w.status === "pending").forEach(w => pend[w.player] = (pend[w.player] || 0) + w.stake);
+  const medals = ["🥇", "🥈", "🥉"];
+  const stand = `<div class="card"><h3>Ranglijst (alleen jij ziet dit)</h3>${[...S.players].sort((a, b) => b.coins - a.coins).map((p, i) =>
+    `<div class="rank"><span>${medals[i] || (i + 1) + "."} ${esc(p.name)}</span><span><b>${fmt(p.coins)}</b> <span class="muted">(openstaand ${fmt(pend[p.name] || 0)})</span></span></div>`).join("") || `<div class="muted">Nog geen spelers</div>`}</div>`;
+  return stand + titlesView();
+}
+function titlesView() {
+  const done = S.wagers.filter(w => w.status === "won" || w.status === "lost");
+  const live = S.wagers.filter(w => w.status !== "void");
+  const best = (map, dir = 1) => { const e = Object.entries(map); if (!e.length) return null; const m = Math.max(...e.map(x => x[1] * dir)); return { names: e.filter(x => x[1] * dir === m).map(x => x[0]), val: m * dir }; };
+  const box = (em, name, txt) => `<div class="title-box"><div class="em">${em}</div><div><b>${name}</b><div class="muted">${txt}</div></div></div>`;
+  const out = [];
+  const won = done.filter(w => w.status === "won");
+  if (won.length) {
+    const mo = Math.max(...won.map(w => w.odds)), wo = won.filter(w => w.odds === mo);
+    out.push(box("🍀", "Gelukzak", `${wo.map(w => esc(w.player)).join(", ")}: gewonnen op odds ${mo.toFixed(2)}x (${esc(wo[0].title || "")})`));
+    const mn = Math.max(...won.map(w => w.net)), wn = won.filter(w => w.net === mn);
+    out.push(box("💰", "Grootste winst in één bet", `${wn.map(w => esc(w.player)).join(", ")}: +${fmt(mn)} LeCoins (${esc(wn[0].title || "")})`));
+    const cnt = {}; won.forEach(w => cnt[w.player] = (cnt[w.player] || 0) + 1);
+    const sc = best(cnt); out.push(box("🎯", "Scherpschutter", `${sc.names.map(esc).join(", ")}: ${sc.val} gewonnen bets`));
+  }
+  const lostSum = {}; done.filter(w => w.status === "lost").forEach(w => lostSum[w.player] = (lostSum[w.player] || 0) + w.stake);
+  const pv = best(lostSum); if (pv) out.push(box("🌧️", "Pechvogel", `${pv.names.map(esc).join(", ")}: ${fmt(pv.val)} LeCoins verloren`));
+  const sum = {}, c = {}; live.forEach(w => { sum[w.player] = (sum[w.player] || 0) + w.odds; c[w.player] = (c[w.player] || 0) + 1; });
+  const avg = {}; Object.keys(sum).forEach(p => avg[p] = sum[p] / c[p]);
+  const du = best(avg); if (du) out.push(box("🔥", "Durfal", `${du.names.map(esc).join(", ")}: gemiddelde odds ${du.val.toFixed(2)}x over ${c[du.names[0]]} inzetten`));
+  return `<div class="card"><h3>Titels (alleen jij ziet dit)</h3>${out.join("") || `<div class="muted">Titels verschijnen zodra er inzetten zijn. Gelukzak, winst, scherpschutter en pechvogel komen na de eerste uitbetaling.</div>`}</div>`;
+}
+
+function resCard(g) {
+  const R = readRes(g), id = g.id;
+  const inp = (t, q) => `<td><input class="sc" type="number" inputmode="numeric" id="f_r_${id}_${t}_${q}" value="${esc(F(`f_r_${id}_${t}_${q}`))}"></td>`;
+  const bets = gameBetsToSettle(g);
+  const props = S.bets.filter(b => b.gameId === id && b.type === "prop" && b.published !== false);
+  let prev = "";
+  if (!R) prev = `<div class="muted">Vul alle kwarten van beide teams in, of haal de uitslag op.</div>`;
+  else if (R.err) prev = `<div class="err">${esc(R.err)}</div>`;
+  else {
+    const items = bets.map(b => ({ bet: b, idx: outcome(b, R, g) }));
+    prev = `<div class="info">Eindstand ${esc(g.away)} ${R.A} - ${R.H} ${esc(g.home)}${R.ao || R.ho ? " (na overtime)" : ""}</div>
+    <table>${items.map(({ bet, idx }) => {
+      const n = S.wagers.filter(w => w.betId === bet.id && w.status === "pending").length;
+      const lab = idx === null ? `<span class="muted">zelf invullen (Bets-tab)</span>` : idx === -1 ? "Vervalt, inzet terug" : `<b>${esc(bet.options[idx]?.label)}</b>`;
+      return `<tr><td>${esc(bet.title)}</td><td>${lab}</td><td class="muted">${n} inzet${n === 1 ? "" : "ten"}</td></tr>`;
+    }).join("") || `<tr><td class="muted">Geen openstaande bets</td></tr>`}</table>
+    ${items.some(x => x.idx !== null) ? `<div style="margin-top:10px"><button class="btn green" data-a="confirmRes" data-g="${id}">Bevestig en betaal uit</button></div>` : ""}`;
+  }
+  return `<div class="card"><h2>${esc(g.away)} @ ${esc(g.home)} ${g.closed ? "🔒" : ""}</h2><div class="muted">${fdate(g.start)}</div>
+  <div class="row" style="margin:8px 0"><button class="btn grey small" data-a="toggleGame" data-g="${id}">${g.closed ? "Heropen wedstrijd" : "Sluit wedstrijd"}</button>
+  <button class="btn gold small" data-a="fetchRes" data-g="${id}">Haal uitslag online op</button></div>
+  ${S.res[id] ? `<div class="info">${esc(S.res[id])}</div>` : ""}
+  <div style="overflow-x:auto"><table><tr><th></th><th>K1</th><th>K2</th><th>K3</th><th>K4</th><th>OT</th></tr>
+  <tr><td>${esc(g.away)}</td>${[1, 2, 3, 4, "o"].map(q => inp("a", q)).join("")}</tr>
+  <tr><td>${esc(g.home)}</td>${[1, 2, 3, 4, "o"].map(q => inp("h", q)).join("")}</tr></table></div>
+  <div class="muted">OT is het totaal aantal punten in de verlenging, leeg laten als er geen was.</div>
+  <label>Welk team scoorde als eerste?</label>
+  <select id="f_first_${id}"><option value="">Nog niet ingevuld</option><option value="a" ${F("f_first_" + id) === "a" ? "selected" : ""}>${esc(g.away)}</option><option value="h" ${F("f_first_" + id) === "h" ? "selected" : ""}>${esc(g.home)}</option></select>
+  ${props.length ? `<label>Punten per speler</label><div class="row">${props.map(b => `<div><div class="muted">${esc(b.player || b.title)}</div><input type="number" inputmode="numeric" id="f_p_${id}_${b.id}" value="${esc(F(`f_p_${id}_${b.id}`))}"></div>`).join("")}</div>` : ""}
+  <div style="margin-top:12px">${prev}</div></div>`;
+}
+
+function adminRes() {
+  const gs = S.games.filter(g => !isGen(g)), gen = S.games.find(isGen);
+  let genCard = "";
+  if (gen) {
+    const bets = gameBetsToSettle(gen);
+    genCard = `<div class="card"><h2>Algemene bets</h2><div class="muted">Hier kies je zelf de winnaar per bet.</div>
+    ${bets.map(b => `<div class="bet"><b>${esc(b.title)}</b><div class="muted">${S.wagers.filter(w => w.betId === b.id && w.status === "pending").length} inzetten</div>
+    <div class="row" style="margin-top:6px">${b.options.map((o, i) => `<button class="btn green small" data-a="settle" data-b="${b.id}" data-i="${i}">${esc(o.label)}</button>`).join("")}
+    <button class="btn grey small" data-a="voidBet" data-b="${b.id}">Vervalt</button></div></div>`).join("") || `<div class="muted" style="margin-top:8px">Geen openstaande algemene bets</div>`}</div>`;
+  }
+  return (gs.map(resCard).join("") || `<div class="card muted">Nog geen wedstrijden. Laad ze in het tabblad Bets.</div>`) + genCard;
+}
+
+function adminBet(b) {
+  const settled = b.status === "settled" || b.status === "void";
+  const conc = b.published === false;
+  return `<div class="bet"><b>${esc(b.title)}</b> <span class="pill">${b.status}</span> ${conc ? `<span class="pill concept">Concept</span>` : ""}
+  ${!settled ? `<label>Titel</label><input id="f_bt_${b.id}" value="${esc(F("f_bt_" + b.id, b.title))}">
+  ${b.options.map((o, i) => `<div class="row" style="margin-top:6px"><input id="f_bl_${b.id}_${i}" value="${esc(F(`f_bl_${b.id}_${i}`, o.label))}"><input id="f_od_${b.id}_${i}" type="number" step="0.01" value="${esc(F(`f_od_${b.id}_${i}`, o.odds))}" style="max-width:100px"></div>`).join("")}
+  <label>Maximale inzet (1 tot ${MAX_STAKE})</label><input id="f_bm_${b.id}" type="number" value="${esc(F("f_bm_" + b.id, capOf(b)))}">
+  <div class="row" style="margin-top:8px"><button class="btn grey small" data-a="saveBet" data-b="${b.id}">Opslaan</button>
+  ${conc ? `<button class="btn gold small" data-a="publish" data-b="${b.id}" data-v="1">Toevoegen (publiceren)</button>` : `<button class="btn grey small" data-a="publish" data-b="${b.id}" data-v="0">Terug naar concept</button>`}
+  <button class="btn grey small" data-a="lock" data-b="${b.id}" data-v="${b.status === "locked" ? "open" : "locked"}">${b.status === "locked" ? "Heropenen" : "Deze bet sluiten"}</button></div>
+  ${conc ? "" : `<div class="muted" style="margin-top:8px">Uitslag handmatig, kies de winnaar:</div>
+  <div class="row">${b.options.map((o, i) => `<button class="btn green small" data-a="settle" data-b="${b.id}" data-i="${i}">${esc(o.label)}</button>`).join("")}<button class="btn grey small" data-a="voidBet" data-b="${b.id}">Vervalt</button></div>`}`
+  : `<div class="muted">${b.status === "settled" ? "Winnaar: " + esc(b.options[b.winner]?.label) : "Vervallen"}</div>
+  <div style="margin-top:6px"><button class="btn small" data-a="undoSettle" data-b="${b.id}">Uitslag corrigeren (uitbetaling terugdraaien)</button></div>`}
+  <div style="margin-top:6px"><button class="btn grey small" data-a="delBet" data-b="${b.id}">Verwijder bet</button></div></div>`;
+}
+
+function addBetForm(g) {
+  const gen = isGen(g), gid = g.id;
+  if (gen) {
+    return `<div class="bet"><h3>Bet toevoegen</h3><label>Titel</label><input id="f_t_${gid}" value="${esc(F("f_t_" + gid))}">
+    <label>Opties, per regel: naam | odds</label><textarea id="f_o_${gid}">${esc(F("f_o_" + gid, "Ja | 2.00\nNee | 2.00"))}</textarea>
+    <label>Maximale inzet (1 tot ${MAX_STAKE})</label><input id="f_m_${gid}" type="number" value="${esc(F("f_m_" + gid, MAX_STAKE))}">
+    <div style="margin-top:10px"><button class="btn gold" data-a="addBet" data-g="${gid}">Bet toevoegen</button></div></div>`;
+  }
+  const k = F("f_tpl_" + gid, "winner"), t = tpl(k, g, F("f_line_" + gid, TPL_LINE[k] || "0"), F("f_player_" + gid));
+  return `<div class="bet"><h3>Bet toevoegen</h3><label>Sjabloon</label>
+  <select id="f_tpl_${gid}" data-a="tpl" data-g="${gid}">${TPL_NAMES.map(([v, l]) => `<option value="${v}" ${k === v ? "selected" : ""}>${l}</option>`).join("")}</select>
+  ${k === "prop" ? `<label>Spelersnaam</label><input id="f_player_${gid}" data-refill="${gid}" value="${esc(F("f_player_" + gid))}" placeholder="bijv. Brunson">` : ""}
+  ${TPL_LINE[k] ? `<label>${k === "spread" ? "Spread van de thuisploeg (bijv. -1.5)" : "Lijn (eindigt op .5)"}</label><input id="f_line_${gid}" data-refill="${gid}" value="${esc(F("f_line_" + gid, TPL_LINE[k]))}">` : ""}
+  <label>Titel</label><input id="f_t_${gid}" value="${esc(F("f_t_" + gid, t.title))}">
+  <label>Opties, per regel: naam | odds</label><textarea id="f_o_${gid}">${esc(F("f_o_" + gid, t.opts))}</textarea>
+  <label>Maximale inzet (1 tot ${MAX_STAKE})</label><input id="f_m_${gid}" type="number" value="${esc(F("f_m_" + gid, MAX_STAKE))}">
+  <div style="margin-top:10px"><button class="btn gold" data-a="addBet" data-g="${gid}">Bet toevoegen</button></div></div>`;
+}
+
+function adminGames() {
+  const concepts = S.bets.filter(b => b.published === false).length;
+  const top = `<div class="card"><h3>Kerstwedstrijden</h3><div class="muted">Laadt de 3 wedstrijden en het kopje Algemeen met alle bets. Bets die ik online vond staan direct klaar. De rest staat als Concept met eerlijke odds die ik zelf heb geschat. Bestaande bets en odds blijven ongemoeid.</div>
+  <div style="margin-top:10px"><button class="btn gold" data-a="seedXmas">Laad of werk de kerstwedstrijden bij</button></div>
+  ${concepts ? `<div class="info" style="margin-top:10px">Er staan <b>${concepts}</b> bets als concept. Controleer de odds en klik per bet op Toevoegen, of publiceer ze allemaal.<div style="margin-top:8px"><button class="btn small" data-a="publishAll">Publiceer alle concepts</button></div></div>` : ""}</div>`;
+  const gform = `<div class="card"><h3>Extra wedstrijd (bijv. een test)</h3>
+  <label>Uitploeg</label><input id="f_away" value="${esc(F("f_away"))}" placeholder="bijv. Hawks">
+  <label>Thuisploeg</label><input id="f_home" value="${esc(F("f_home"))}" placeholder="bijv. Pistons">
+  <label>Starttijd (jouw tijd)</label><input id="f_start" type="datetime-local" value="${esc(F("f_start"))}">
+  <div style="margin-top:10px"><button class="btn gold" data-a="addGame">Wedstrijd toevoegen</button></div></div>`;
+  const order = [...S.games.filter(g => !isGen(g)), ...S.games.filter(isGen)];
+  const list = order.map(g => {
+    const bets = S.bets.filter(b => b.gameId === g.id);
+    const conc = bets.filter(b => b.published === false).length;
+    return `<div class="card"><h2>${esc(gLabel(g))} ${g.closed ? "🔒" : ""}</h2>${isGen(g) ? "" : `<div class="muted">${fdate(g.start)}</div>`}
+    <div class="row" style="margin:8px 0"><button class="btn grey small" data-a="toggleGame" data-g="${g.id}">${g.closed ? "Heropen wedstrijd" : "Sluit wedstrijd"}</button>
+    ${conc ? `<button class="btn small" data-a="publishGame" data-g="${g.id}">Publiceer ${conc} concepts</button>` : ""}
+    <button class="btn grey small" data-a="delGame" data-g="${g.id}">Verwijderen</button></div>
+    ${bets.map(adminBet).join("") || `<div class="muted">Nog geen bets</div>`}${addBetForm(g)}</div>`;
+  }).join("");
+  return top + list + gform;
+}
+
+function adminPlayers() {
+  return `<div class="card"><h3>Spelers en LeCoins</h3>
+  ${S.players.map(p => `<div class="row" style="margin:8px 0"><div style="flex:1 1 90px"><b>${esc(p.name)}</b><div class="muted">${fmt(p.coins)}</div></div>
+  <input id="f_c_${esc(p.name)}" type="number" placeholder="Nieuw saldo" value="${esc(F("f_c_" + p.name))}">
+  <button class="btn gold small" data-a="setCoins" data-n="${esc(p.name)}">Zet saldo</button>
+  <button class="btn grey small" data-a="delPlayer" data-n="${esc(p.name)}">X</button></div>`).join("") || `<div class="muted">Nog geen spelers, zodra iemand inlogt verschijnt hij hier.</div>`}</div>
+  <div class="card"><h3>Speler toevoegen</h3><input id="f_newp" value="${esc(F("f_newp"))}" placeholder="Naam">
+  <div style="margin-top:10px"><button class="btn gold" data-a="addPlayer">Toevoegen met ${START_COINS} LeCoins</button></div></div>
+  <div class="card"><h3>Iedereen terug naar ${START_COINS}</h3><button class="btn" data-a="resetAll">Reset alle saldo's</button></div>
+  <div class="card"><h3>Schone start na het testen</h3><div class="muted">Wist alle inzetten, zet saldo's terug, opent alle bets en wedstrijden weer.</div><div style="margin-top:10px"><button class="btn" data-a="wipe">Wis inzetten en begin opnieuw</button></div></div>`;
+}
+
+function adminCalc() {
+  const a = parseFloat(F("f_ca")), b = parseFloat(F("f_cb")), p = parseFloat(F("f_cp"));
+  let r1 = "";
+  if (a > 1 && b > 1) { const [x, y] = fair2(a, b); r1 = `Eerlijke odds: <b>${x.toFixed(2)}</b> en <b>${y.toFixed(2)}</b>`; }
+  let r2 = "";
+  if (p > 0 && p < 100) { const o = Math.min(100 / p, MAX_ODDS); r2 = `Odds: <b>${o.toFixed(2)}</b>${100 / p > MAX_ODDS ? " (afgekapt op " + MAX_ODDS + ")" : ""}`; }
+  return `<div class="card"><h3>Bookmakerodds zonder marge</h3><div class="row"><input id="f_ca" type="number" step="0.01" placeholder="Odds 1" value="${esc(F("f_ca"))}"><input id="f_cb" type="number" step="0.01" placeholder="Odds 2" value="${esc(F("f_cb"))}"></div>
+  <div style="margin-top:8px"><button class="btn gold" data-a="rerender">Bereken</button></div><p>${r1}</p></div>
+  <div class="card"><h3>Kans in procenten naar odds</h3><input id="f_cp" type="number" step="0.1" placeholder="Kans in %" value="${esc(F("f_cp"))}">
+  <div style="margin-top:8px"><button class="btn gold" data-a="rerender">Bereken</button></div><p>${r2}</p></div>`;
+}
+
+// ---------- kerstdata ----------
+const XMAS = [
+  { away: "Spurs", home: "Knicks", start: Date.UTC(2026, 11, 25, 17, 0), ml: [2.04, 1.96], spread: { home: -1.5, odds: [1.96, 2.04] }, total: { line: 229.5, odds: [2.0, 2.0] }, q1: [2.10, 1.90], h1: [2.06, 1.94], props: [["Wembanyama", 26.5], ["Brunson", 27.5]] },
+  { away: "Heat", home: "Celtics", start: Date.UTC(2026, 11, 25, 19, 30), ml: [2.65, 1.61], spread: { home: -5.5, odds: [1.93, 2.07] }, total: { line: 228.5, odds: [1.96, 2.04] }, q1: [2.27, 1.79], h1: [2.50, 1.67], props: [["Antetokounmpo", 26.5], ["Tatum", 27.5]] },
+  { away: "76ers", home: "Lakers", start: Date.UTC(2026, 11, 25, 22, 0), ml: [2.09, 1.92], spread: { home: -1.5, odds: [2.0, 2.0] }, total: { line: 234.5, odds: [2.0, 2.0] }, q1: [2.13, 1.88], h1: [2.08, 1.92], props: [["LeBron", 21.5], ["Doncic", 29.5]] }
+];
+function gameSeed(x) {
+  const a = x.away, h = x.home, o = (l, od) => ({ label: l, odds: od });
+  const s = [
+    { key: "winner", type: "winner", order: 1, pub: true, title: "Winnaar wedstrijd", options: [o(a, x.ml[0]), o(h, x.ml[1])], extra: {} },
+    { key: "spread", type: "spread", order: 2, pub: true, title: "Spread (puntenverschil)", options: [o(`${a} ${sg(-x.spread.home)}`, x.spread.odds[0]), o(`${h} ${sg(x.spread.home)}`, x.spread.odds[1])], extra: { spreadHome: x.spread.home } },
+    { key: "total", type: "total", order: 3, pub: true, title: "Totaal aantal punten", options: [o(`Over ${x.total.line}`, x.total.odds[0]), o(`Onder ${x.total.line}`, x.total.odds[1])], extra: { line: x.total.line } },
+    { key: "margin", type: "margin", order: 4, pub: false, title: "Met hoeveel punten wordt de wedstrijd gewonnen?", options: [o("1 tot 5 punten", 3.7), o("6 tot 10 punten", 4.2), o("11 tot 15 punten", 5.3), o("16 of meer punten", 3.4)], extra: {} },
+    { key: "q1", type: "q1", order: 5, pub: false, title: `Scoort ${a} meer punten dan ${h} in het eerste kwart?`, options: [o("Ja", x.q1[0]), o("Nee", x.q1[1])], extra: {} },
+    { key: "half1", type: "half1", order: 6, pub: false, title: `Scoort ${a} meer punten dan ${h} in de eerste helft?`, options: [o("Ja", x.h1[0]), o("Nee", x.h1[1])], extra: {} },
+    { key: "ot", type: "ot", order: 7, pub: false, title: "Gaat de wedstrijd naar overtime?", options: [o("Ja", 14), o("Nee", 1.07)], extra: {} },
+    { key: "bestq", type: "bestq", order: 8, pub: false, title: "In welk kwart vallen de meeste punten (beide teams samen)? Bij gelijk telt het vroegste kwart.", options: [o("Kwart 1", 4), o("Kwart 2", 4), o("Kwart 3", 4), o("Kwart 4", 4)], extra: {} },
+    { key: "first", type: "first", order: 9, pub: false, title: "Welk team scoort als eerste?", options: [o(a, 2), o(h, 2)], extra: {} }
+  ];
+  x.props.forEach(([n, l], i) => s.push({ key: "prop_" + norm(n), type: "prop", order: 10 + i, pub: false, title: `${n}: totaal aantal punten`, options: [o(`Over ${l}`, 2), o(`Onder ${l}`, 2)], extra: { line: l, player: n, match: norm(n) } }));
+  return s;
+}
+const GENERAL_BETS = [
+  { key: "g_coachtech", title: "Krijgt een coach in een van de 3 wedstrijden een technische fout?", options: [["Ja", 4.0], ["Nee", 1.33]] },
+  { key: "g_playertech", title: "Krijgt een speler in een van de 3 wedstrijden een technische fout?", options: [["Ja", 1.3], ["Nee", 3.4]] },
+  { key: "g_eject", title: "Wordt een speler of coach uit de wedstrijd gezet?", options: [["Ja", 2.9], ["Nee", 1.5]] },
+  { key: "g_ot", title: "Gaat minstens een van de 3 wedstrijden naar overtime?", options: [["Ja", 5.5], ["Nee", 1.22]] },
+  { key: "g_40", title: "Scoort een speler 40 punten of meer in een van de 3 wedstrijden?", options: [["Ja", 4.0], ["Nee", 1.33]] },
+  { key: "g_td", title: "Maakt een speler een triple-double in een van de 3 wedstrijden?", options: [["Ja", 4.0], ["Nee", 1.33]] },
+  { key: "g_home", title: "Hoeveel thuisteams winnen er (Knicks, Celtics, Lakers)?", options: [["0 thuisteams", 11.3], ["1 thuisteam", 2.99], ["2 thuisteams", 2.43], ["3 thuisteams", 6.03]] },
+  { key: "g_total", title: "Totaal aantal punten in alle 3 de wedstrijden samen (lijn 692.5)", options: [["Over 692.5", 2.0], ["Onder 692.5", 2.0]] },
+  { key: "g_top", title: "Welke speler scoort de meeste punten in een van de 3 wedstrijden?", options: [["Doncic", 5.9], ["Antetokounmpo", 7.1], ["Wembanyama", 8.3], ["Brunson", 12.5], ["Tatum", 14.3], ["LeBron", 15], ["Een andere speler", 2.8]] }
+];
+const LEGACY = { "Winnaar wedstrijd": ["winner", {}], "Totaal aantal punten": ["total", null] };
+
+// ---------- acties ----------
+function refill(gid) {
+  const g = gameOf(gid), k = F("f_tpl_" + gid, "winner");
+  const t = tpl(k, g, F("f_line_" + gid, TPL_LINE[k] || "0"), F("f_player_" + gid));
+  S.form["f_t_" + gid] = t.title; S.form["f_o_" + gid] = t.opts; render();
+}
+const A = {
+  async login(d) {
+    try {
+      const ref = doc(db, "players", d.n);
+      if (!(await getDoc(ref)).exists()) await setDoc(ref, { name: d.n, coins: START_COINS });
+      S.me = d.n; S.admin = false; S.tab = null; S.notice = null; localStorage.setItem("lc_me", d.n); sessionStorage.removeItem("lc_admin");
+      S.wagers = []; listenWagers(); render();
+    } catch (e) { fail(e); }
+  },
+  adminLogin() {
+    const c = prompt("Admincode");
+    if (c === null) return;
+    if (c !== ADMIN_CODE) { alert("Verkeerde code"); return; }
+    S.me = "admin"; S.admin = true; S.notice = null; localStorage.setItem("lc_me", "admin"); sessionStorage.setItem("lc_admin", "1");
+    S.wagers = []; listenWagers(); render();
+  },
+  logout() { S.me = null; S.admin = false; S.notice = null; S.tab = null; localStorage.removeItem("lc_me"); sessionStorage.removeItem("lc_admin"); S.wagers = []; listenWagers(); render(); },
+  closeNotice() { const seen = getSeen(); S.notice.forEach(w => seen.push(nkey(w))); setSeen(seen); S.notice = null; S.confetti = ""; render(); },
+  tab(d) { S.tab = d.t; S.sel = null; S.err = ""; render(); },
+  atab(d) { S.atab = d.t; render(); },
+  sel(d) { S.sel = { bet: d.b, idx: +d.i }; render(); },
+  quick(d) { S.stake = d.v; render(); },
+  rerender() { render(); },
+  async place(d) {
+    try {
+      const b = S.bets.find(x => x.id === d.b), g = b && gameOf(b.gameId);
+      if (!isOpen(b, g)) { S.err = "Deze bet is gesloten."; return render(); }
+      const stake = Math.floor(Number(document.getElementById("stake")?.value || S.stake));
+      const cap = capOf(b), old = myWager(b.id);
+      const avail = available() + (old && old.status === "pending" ? old.stake : 0);
+      if (!(stake >= MIN_STAKE)) { S.err = "Vul een inzet van minimaal " + MIN_STAKE + " in."; return render(); }
+      if (stake > cap) { S.err = "De maximale inzet voor deze bet is " + cap + "."; return render(); }
+      if (stake > avail) { S.err = "Je hebt maar " + fmt(avail) + " LeCoins beschikbaar."; return render(); }
+      const o = b.options[S.sel.idx];
+      await setDoc(doc(db, "wagers", b.id + "__" + S.me), { player: S.me, betId: b.id, gameId: b.gameId, idx: S.sel.idx, label: o.label, odds: Number(o.odds), stake, title: b.title, gameLabel: gLabel(g), status: "pending", placed: Date.now() });
+      S.sel = null; S.stake = ""; S.err = ""; render();
+    } catch (e) { fail(e); }
+  },
+  async cancel(d) {
+    try { const w = S.wagers.find(x => x.id === d.w); const b = S.bets.find(x => x.id === w.betId);
+      if (!isOpen(b, gameOf(b.gameId))) { S.err = "Te laat, de bet is gesloten."; return render(); }
+      await deleteDoc(doc(db, "wagers", d.w)); } catch (e) { fail(e); }
+  },
+  async toggleGame(d) { const g = gameOf(d.g); try { await updateDoc(doc(db, "games", g.id), { closed: !g.closed }); } catch (e) { fail(e); } },
+  async addGame() {
+    const away = F("f_away").trim(), home = F("f_home").trim(), s = F("f_start");
+    if (!away || !home || !s) { S.err = "Vul beide teams en een starttijd in."; return render(); }
+    try { await addDoc(collection(db, "games"), { away, home, start: new Date(s).getTime(), closed: false }); S.form.f_away = S.form.f_home = S.form.f_start = ""; S.err = ""; render(); } catch (e) { fail(e); }
+  },
+  async delGame(d) {
+    if (!confirm("Wedstrijd, bets en inzetten verwijderen?")) return;
+    try {
+      for (const w of S.wagers.filter(x => x.gameId === d.g)) await deleteDoc(doc(db, "wagers", w.id));
+      for (const b of S.bets.filter(x => x.gameId === d.g)) await deleteDoc(doc(db, "bets", b.id));
+      await deleteDoc(doc(db, "games", d.g));
+    } catch (e) { fail(e); }
+  },
+  tpl(d) { const k = document.getElementById("f_tpl_" + d.g).value; S.form["f_tpl_" + d.g] = k; S.form["f_line_" + d.g] = TPL_LINE[k] || ""; S.form["f_player_" + d.g] = ""; refill(d.g); },
+  async addBet(d) {
+    const g = gameOf(d.g), gen = isGen(g), k = gen ? "custom" : F("f_tpl_" + d.g, "winner");
+    const t = tpl(k, g, F("f_line_" + d.g, TPL_LINE[k] || "0"), F("f_player_" + d.g));
+    const title = F("f_t_" + d.g, t.title).trim(), raw = F("f_o_" + d.g, gen ? "Ja | 2.00\nNee | 2.00" : t.opts);
+    const options = raw.split("\n").map(l => l.split("|")).filter(p => p.length >= 2).map(p => ({ label: p[0].trim(), odds: Math.min(MAX_ODDS, Math.max(1.01, parseFloat(p[1].replace(",", ".")) || 2)) }));
+    if (!title || options.length < 2) { S.err = "Geef een titel en minstens twee opties (naam | odds)."; return render(); }
+    const extra = gen ? {} : t.extra;
+    if ((k === "spread" || k === "total" || k === "prop") && Object.values(extra).some(v => typeof v === "number" && isNaN(v))) { S.err = "De lijn is geen geldig getal."; return render(); }
+    const maxStake = Math.min(MAX_STAKE, Math.max(MIN_STAKE, Number(F("f_m_" + d.g, MAX_STAKE)) || MAX_STAKE));
+    try {
+      await addDoc(collection(db, "bets"), { gameId: d.g, type: t.type, title, options, maxStake, status: "open", published: true, order: 50 + S.bets.length, created: Date.now(), ...extra });
+      ["f_t_", "f_o_", "f_m_"].forEach(p => delete S.form[p + d.g]); S.err = ""; render();
+    } catch (e) { fail(e); }
+  },
+  async saveBet(d) {
+    const b = S.bets.find(x => x.id === d.b);
+    const options = b.options.map((o, i) => ({ label: F(`f_bl_${b.id}_${i}`, o.label).trim() || o.label, odds: Math.min(MAX_ODDS, Math.max(1.01, parseFloat(F(`f_od_${b.id}_${i}`, o.odds)) || o.odds)) }));
+    const maxStake = Math.min(MAX_STAKE, Math.max(MIN_STAKE, Number(F("f_bm_" + b.id, capOf(b))) || MAX_STAKE));
+    try {
+      await updateDoc(doc(db, "bets", b.id), { title: F("f_bt_" + b.id, b.title).trim() || b.title, options, maxStake });
+      Object.keys(S.form).filter(k => k.includes(b.id)).forEach(k => delete S.form[k]); render();
+    } catch (e) { fail(e); }
+  },
+  async publish(d) { try { await updateDoc(doc(db, "bets", d.b), { published: d.v === "1" }); } catch (e) { fail(e); } },
+  async publishAll() {
+    if (!confirm("Alle concept-bets publiceren? Controleer eerst de odds.")) return;
+    try { const batch = writeBatch(db); S.bets.filter(b => b.published === false).forEach(b => batch.update(doc(db, "bets", b.id), { published: true })); await batch.commit(); } catch (e) { fail(e); }
+  },
+  async publishGame(d) {
+    try { const batch = writeBatch(db); S.bets.filter(b => b.gameId === d.g && b.published === false).forEach(b => batch.update(doc(db, "bets", b.id), { published: true })); await batch.commit(); } catch (e) { fail(e); }
+  },
+  async lock(d) { try { await updateDoc(doc(db, "bets", d.b), { status: d.v }); } catch (e) { fail(e); } },
+  async settle(d) {
+    const b = S.bets.find(x => x.id === d.b), idx = +d.i;
+    if (!confirm("Winnaar: " + b.options[idx].label + ". Uitbetalen?")) return;
+    try { await settleMany([{ bet: b, idx }]); } catch (e) { fail(e); }
+  },
+  async voidBet(d) {
+    if (!confirm("Bet laten vervallen? Alle inzetten gaan terug.")) return;
+    try { await settleMany([{ bet: S.bets.find(x => x.id === d.b), idx: -1 }]); } catch (e) { fail(e); }
+  },
+  async confirmRes(d) {
+    const g = gameOf(d.g), R = readRes(g);
+    if (!R || R.err) return;
+    const items = gameBetsToSettle(g).map(b => ({ bet: b, idx: outcome(b, R, g) })).filter(x => x.idx !== null);
+    if (!items.length) return;
+    if (!confirm(items.length + " bets uitbetalen voor " + gLabel(g) + " (" + R.A + " - " + R.H + ")? Je kunt later nog corrigeren.")) return;
+    try { await settleMany(items); S.res[g.id] = "Uitbetaald."; render(); } catch (e) { fail(e); }
+  },
+  async undoSettle(d) {
+    const b = S.bets.find(x => x.id === d.b);
+    if (!confirm("Uitbetaling van deze bet terugdraaien? Daarna kun je opnieuw uitbetalen. Saldo's kunnen tijdelijk onder nul komen als winst al is ingezet.")) return;
+    try {
+      const ops = [], net = {};
+      for (const w of S.wagers.filter(x => x.betId === b.id && x.status !== "pending")) {
+        net[w.player] = (net[w.player] || 0) - (w.net || 0);
+        ops.push(bt => bt.update(doc(db, "wagers", w.id), { status: "pending", net: null, payout: null, settledAt: null }));
+      }
+      ops.push(bt => bt.update(doc(db, "bets", b.id), { status: "open", winner: null }));
+      for (const [p, n] of Object.entries(net)) if (n) ops.push(bt => bt.update(doc(db, "players", p), { coins: increment(n) }));
+      const batch = writeBatch(db); ops.forEach(f => f(batch)); await batch.commit();
+    } catch (e) { fail(e); }
+  },
+  async delBet(d) {
+    if (!confirm("Bet verwijderen? Openstaande inzetten verdwijnen zonder uitbetaling.")) return;
+    try { for (const w of S.wagers.filter(x => x.betId === d.b)) await deleteDoc(doc(db, "wagers", w.id)); await deleteDoc(doc(db, "bets", d.b)); } catch (e) { fail(e); }
+  },
+  async fetchRes(d) {
+    const g = gameOf(d.g), id = g.id;
+    const ymd = new Date(g.start).toLocaleDateString("en-CA", { timeZone: "America/New_York" }).replaceAll("-", "");
+    S.res[id] = "Bezig met ophalen..."; render();
+    let msg = "";
+    try {
+      const r = await fetch("https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=" + ymd);
+      const j = await r.json();
+      const ev = (j.events || []).find(e => { const c = e.competitions?.[0]?.competitors || []; const nm = c.map(x => norm(x.team?.name)); return nm.includes(norm(g.away)) && nm.includes(norm(g.home)); });
+      if (!ev) throw new Error("Wedstrijd niet gevonden bij ESPN voor " + ymd);
+      const comp = ev.competitions[0], cs = comp.competitors;
+      const ca = cs.find(x => norm(x.team?.name) === norm(g.away)), ch = cs.find(x => norm(x.team?.name) === norm(g.home));
+      const done = !!(comp.status?.type?.completed ?? ev.status?.type?.completed);
+      [["a", ca], ["h", ch]].forEach(([t, c]) => {
+        const ls = (c.linescores || []).map(x => Number(x.value ?? x.displayValue));
+        [0, 1, 2, 3].forEach(i => { S.form[`f_r_${id}_${t}_${i + 1}`] = ls[i] === undefined || isNaN(ls[i]) ? "" : String(ls[i]); });
+        const ot = ls.slice(4).reduce((s, x) => s + (isNaN(x) ? 0 : x), 0);
+        S.form[`f_r_${id}_${t}_o`] = ot ? String(ot) : "";
+      });
+      msg = done ? "Eindstand opgehaald van ESPN. Controleer het en bevestig." : "Let op: ESPN meldt dat de wedstrijd nog niet is afgelopen. Dit is een tussenstand.";
+      try {
+        const sr = await fetch("https://site.web.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=" + ev.id);
+        const sum = await sr.json();
+        const pts = {};
+        (sum.boxscore?.players || []).forEach(tp => {
+          const st = tp.statistics?.[0]; if (!st) return;
+          const i = (st.labels || []).indexOf("PTS"); if (i < 0) return;
+          (st.athletes || []).forEach(at => { pts[norm(at.athlete?.displayName)] = at.stats?.[i]; });
+        });
+        let found = 0;
+        S.bets.filter(b => b.gameId === id && b.type === "prop").forEach(b => {
+          const key = Object.keys(pts).find(n => b.match && n.includes(b.match));
+          if (key !== undefined && pts[key] !== undefined && pts[key] !== "") { S.form[`f_p_${id}_${b.id}`] = String(pts[key]); found++; }
+        });
+        const sp = (sum.plays || []).find(p => p.scoringPlay);
+        const tid = sp?.team?.id;
+        if (tid) { S.form[`f_first_${id}`] = tid === ca.team?.id ? "a" : tid === ch.team?.id ? "h" : ""; }
+        msg += " Spelerspunten gevonden: " + found + (tid ? ", eerste score ingevuld." : ", eerste score niet gevonden, kies die zelf.");
+      } catch (e2) { msg += " Spelerspunten en eerste score konden niet worden opgehaald, vul die zelf in."; }
+    } catch (e) { msg = "Ophalen lukte niet (" + (e.message || e) + "). Vul de uitslag zelf in."; }
+    S.res[id] = msg; render();
+  },
+  async seedXmas() {
+    if (!confirm("De kerstwedstrijden laden of bijwerken? Bestaande bets en odds blijven zoals ze zijn.")) return;
+    try {
+      let gen = S.games.find(isGen);
+      if (!gen) { await setDoc(doc(db, "games", GENERAL_ID), { kind: "general", away: "Algemeen", home: "", start: 0, closed: false }); }
+      for (const x of XMAS) {
+        let g = S.games.find(y => !isGen(y) && y.away === x.away && y.home === x.home), gid;
+        if (g) { gid = g.id; if (g.closed === undefined) await updateDoc(doc(db, "games", gid), { closed: false }); }
+        else gid = (await addDoc(collection(db, "games"), { away: x.away, home: x.home, start: x.start, closed: false })).id;
+        const have = S.bets.filter(b => b.gameId === gid);
+        for (const s of gameSeed(x)) {
+          const ex = have.find(b => b.key === s.key || (LEGACY[b.title] && LEGACY[b.title][0] === s.key));
+          if (ex) { await updateDoc(doc(db, "bets", ex.id), { key: s.key, type: s.type, order: s.order, ...s.extra, maxStake: capOf(ex) }); continue; }
+          await addDoc(collection(db, "bets"), { gameId: gid, key: s.key, type: s.type, title: s.title, options: s.options, maxStake: MAX_STAKE, status: "open", published: s.pub, order: s.order, created: Date.now(), ...s.extra });
+        }
+      }
+      const haveG = S.bets.filter(b => b.gameId === GENERAL_ID);
+      let n = 0;
+      for (const s of GENERAL_BETS) {
+        if (haveG.some(b => b.key === s.key)) continue;
+        await addDoc(collection(db, "bets"), { gameId: GENERAL_ID, key: s.key, type: "custom", title: s.title, options: s.options.map(([label, odds]) => ({ label, odds })), maxStake: MAX_STAKE, status: "open", published: false, order: 100 + n++, created: Date.now() });
+      }
+      S.err = ""; render();
+    } catch (e) { fail(e); }
+  },
+  async setCoins(d) { const v = parseInt(F("f_c_" + d.n)); if (isNaN(v)) { S.err = "Vul een getal in."; return render(); }
+    try { await updateDoc(doc(db, "players", d.n), { coins: v }); delete S.form["f_c_" + d.n]; render(); } catch (e) { fail(e); } },
+  async addPlayer() { const n = F("f_newp").trim(); if (!n) return;
+    try { await setDoc(doc(db, "players", n), { name: n, coins: START_COINS }); S.form.f_newp = ""; render(); } catch (e) { fail(e); } },
+  async delPlayer(d) { if (!confirm(d.n + " verwijderen?")) return; try { await deleteDoc(doc(db, "players", d.n)); } catch (e) { fail(e); } },
+  async wipe() {
+    if (!confirm("Alle inzetten wissen, alle saldo's terug naar " + START_COINS + ", alle bets en wedstrijden weer openzetten? Wedstrijden en bets blijven staan.")) return;
+    try {
+      const ops = [];
+      S.wagers.forEach(w => ops.push(b => b.delete(doc(db, "wagers", w.id))));
+      S.players.forEach(p => ops.push(b => b.update(doc(db, "players", p.id), { coins: START_COINS })));
+      S.bets.filter(b => b.status !== "open").forEach(x => ops.push(b => b.update(doc(db, "bets", x.id), { status: "open", winner: null })));
+      S.games.filter(g => g.closed).forEach(x => ops.push(b => b.update(doc(db, "games", x.id), { closed: false })));
+      for (let i = 0; i < ops.length; i += 400) { const batch = writeBatch(db); ops.slice(i, i + 400).forEach(f => f(batch)); await batch.commit(); }
+    } catch (e) { fail(e); }
+  },
+  async resetAll() { if (!confirm("Iedereen terug naar " + START_COINS + " LeCoins?")) return;
+    try { const batch = writeBatch(db); S.players.forEach(p => batch.update(doc(db, "players", p.id), { coins: START_COINS })); await batch.commit(); } catch (e) { fail(e); } }
+};
+
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-a]");
+  if (!t || t.tagName === "SELECT") return;
+  document.activeElement?.blur?.();
+  A[t.dataset.a]?.(t.dataset);
+});
+document.addEventListener("change", e => {
+  const t = e.target;
+  if (t.id?.startsWith("f_")) S.form[t.id] = t.value;
+  if (t.dataset?.a === "tpl") { document.activeElement?.blur?.(); A.tpl(t.dataset); }
+  else if (t.dataset?.refill) refill(t.dataset.refill);
+  else if (t.id?.startsWith("f_first_")) { document.activeElement?.blur?.(); render(); }
+  else if (t.id?.startsWith("f_r_") || t.id?.startsWith("f_p_")) S.dirty = true;
+});
+document.addEventListener("input", e => { if (e.target.id?.startsWith("f_")) S.form[e.target.id] = e.target.value; if (e.target.id === "stake") S.stake = e.target.value; });
+document.addEventListener("focusout", () => { setTimeout(() => { if (S.dirty && !typing()) render(); }, 350); });
+render();
+</script>
+</body>
+</html>
