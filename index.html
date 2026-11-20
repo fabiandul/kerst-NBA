@@ -69,6 +69,14 @@ td,th{padding:7px 4px;border-bottom:1px solid #ffffff1a;text-align:left}
 @keyframes fall{to{transform:translateY(115vh) rotate(420deg)}}
 .modal{position:fixed;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
 .modal .box{background:var(--card);border:3px solid var(--gold);border-radius:20px;padding:18px;max-width:420px;width:100%;max-height:80vh;overflow:auto}
+#intro{position:fixed;inset:0;background:#000;z-index:100;display:flex;align-items:center;justify-content:center}
+#intro[hidden]{display:none}
+#intro video{width:100%;height:100%;object-fit:contain;background:#000}
+#introClose{position:absolute;top:calc(12px + env(safe-area-inset-top));right:12px}
+#introStopAll{position:absolute;top:calc(12px + env(safe-area-inset-top));left:12px}
+#introSound{position:absolute;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%)}
+#introTap{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:20px;padding:16px 22px}
+#intro button[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -137,7 +145,67 @@ function listen(name, key, sortFn) {
 listen("games", "games", (a, b) => (a.start || 0) - (b.start || 0));
 listen("bets", "bets", (a, b) => (a.order || 0) - (b.order || 0) || (a.created || 0) - (b.created || 0));
 listen("players", "players", (a, b) => b.coins - a.coins);
-onSnapshot(doc(db, "settings", "main"), snap => { S.settings = snap.exists() ? snap.data() : {}; render(); }, e => fail(e));
+onSnapshot(doc(db, "settings", "main"), snap => { S.settings = snap.exists() ? snap.data() : {}; handleIntro(); render(); }, e => fail(e));
+
+// ---------- intro-video (admin start hem bij iedereen die de app open heeft) ----------
+const INTRO_SRC = "lecoins-intro.mp4?v=1";
+const INTRO_WINDOW = 3 * 60 * 1000;
+const introEl = document.createElement("div");
+introEl.id = "intro";
+introEl.hidden = true;
+introEl.innerHTML = `<video src="${INTRO_SRC}" playsinline preload="none"></video>
+<button class="btn grey small" id="introClose">✕ Sluiten</button>
+<button class="btn small" id="introStopAll" hidden>■ Stop bij iedereen</button>
+<button class="btn gold" id="introSound" hidden>🔊 Tik voor geluid</button>
+<button class="btn gold" id="introTap" hidden>▶ Tik om de intro te starten</button>`;
+document.body.appendChild(introEl);
+const introV = introEl.querySelector("video");
+const introBtn = id => introEl.querySelector("#" + id);
+let introBase, introPlayed = null, introMode = null, introUnlocked = false;
+
+// Telefoons (vooral iPhones) spelen geluid alleen af na een tik. Bij de eerste tik in de app
+// starten we de video heel even zonder geluid, zodat hij later wel met geluid mag starten.
+function unlockIntro() {
+  if (introUnlocked || !introEl.hidden) return;
+  introUnlocked = true;
+  introV.muted = true;
+  const p = introV.play();
+  if (p) p.then(() => { if (introEl.hidden) { introV.pause(); introV.currentTime = 0; introV.muted = false; } })
+    .catch(() => { introV.muted = false; introUnlocked = false; });
+}
+document.addEventListener("pointerdown", unlockIntro, true);
+
+async function openIntro(mode) {
+  introMode = mode;
+  introEl.hidden = false;
+  introBtn("introSound").hidden = true;
+  introBtn("introTap").hidden = true;
+  introBtn("introStopAll").hidden = !(S.admin && mode === "live");
+  introV.currentTime = 0;
+  introV.muted = false;
+  try { await introV.play(); }
+  catch (e) {
+    introV.muted = true;
+    try { await introV.play(); introBtn("introSound").hidden = false; }
+    catch (e2) { introBtn("introTap").hidden = false; }
+  }
+}
+function closeIntro() { introV.pause(); introEl.hidden = true; introMode = null; }
+introV.addEventListener("ended", closeIntro);
+introBtn("introClose").addEventListener("click", closeIntro);
+introBtn("introStopAll").addEventListener("click", () => { closeIntro(); A.introStop(); });
+introBtn("introSound").addEventListener("click", () => { introV.muted = false; introBtn("introSound").hidden = true; });
+introBtn("introTap").addEventListener("click", () => { introV.muted = false; introBtn("introTap").hidden = true; introV.play().catch(() => {}); });
+
+function handleIntro() {
+  const it = (S.settings || {}).intro || {};
+  // De eerste keer onthouden we alleen de huidige stand: wie de app later opent, krijgt een oude start niet te zien.
+  if (introBase === undefined) { introBase = it.id || null; return; }
+  if (it.on && it.id && it.id !== introBase && it.id !== introPlayed && Math.abs(Date.now() - (it.at || 0)) < INTRO_WINDOW) {
+    introPlayed = it.id;
+    openIntro("live");
+  } else if (!it.on && introMode === "live") closeIntro();
+}
 
 function listenWagers() {
   if (unsubW) unsubW();
@@ -618,7 +686,12 @@ function adminOver() {
     return `<div class="card"><h3>${esc(gLabel(g))} ${g.closed ? "🔒" : ""}</h3>${isGen(g) ? "" : `<div class="muted">${fdate(g.start)}</div>`}${rows || `<div class="muted">Nog geen inzetten</div>`}</div>`;
   }).join("");
   const tot = S.wagers.filter(w => w.status === "pending").reduce((s, w) => s + w.stake, 0);
-  return `<div class="info">Openstaand totaal: <b>${fmt(tot)}</b> LeCoins in <b>${S.wagers.filter(w => w.status === "pending").length}</b> inzetten</div>` + (per || `<div class="card muted">Nog geen wedstrijden</div>`);
+  const it = (S.settings || {}).intro || {};
+  const introCard = `<div class="card"><h3>🎬 Intro-video</h3>
+  <div class="muted">Speelt de intro af op elk apparaat waarop de app nu open staat. Wie de app later opent, krijgt hem niet te zien.</div>
+  <div class="row" style="margin-top:10px"><button class="btn gold" data-a="introPlay">▶ Afspelen bij iedereen</button><button class="btn grey" data-a="introStop">■ Stop</button><button class="btn grey small" data-a="introPreview">Alleen ik</button></div>
+  ${it.at ? `<div class="muted" style="margin-top:8px">Laatst gestart: ${fdate(it.at)}${it.on ? "" : " (gestopt)"}</div>` : ""}</div>`;
+  return introCard + `<div class="info">Openstaand totaal: <b>${fmt(tot)}</b> LeCoins in <b>${S.wagers.filter(w => w.status === "pending").length}</b> inzetten</div>` + (per || `<div class="card muted">Nog geen wedstrijden</div>`);
 }
 
 function adminRank() {
@@ -1075,6 +1148,15 @@ const A = {
     const v = { ...((S.settings || {}).visible || {}) }; v[d.id] = !v[d.id];
     try { await setDoc(doc(db, "settings", "main"), { visible: v }, { mergeFields: ["visible"] }); } catch (e) { fail(e); }
   },
+  async introPlay() {
+    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    try { await setDoc(doc(db, "settings", "main"), { intro: { on: true, at: Date.now(), id } }, { mergeFields: ["intro"] }); S.err = ""; } catch (e) { fail(e); }
+  },
+  async introStop() {
+    const it = (S.settings || {}).intro || {};
+    try { await setDoc(doc(db, "settings", "main"), { intro: { ...it, on: false } }, { mergeFields: ["intro"] }); } catch (e) { fail(e); }
+  },
+  introPreview() { openIntro("preview"); },
   async publishRank() {
     try { await setDoc(doc(db, "settings", "main"), { snap: computeBoards(S.wagers, S.players), snapAt: Date.now() }, { mergeFields: ["snap", "snapAt"] }); S.err = ""; } catch (e) { fail(e); }
   },
